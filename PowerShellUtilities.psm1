@@ -1,1 +1,1 @@
-Import-Module -Name $PSScriptRoot\Modules\PowerShellUtilies.Core -Global
+Import-Module -Name $PSScriptRoot\Modules\PowerShellUtilities.Core -Global
