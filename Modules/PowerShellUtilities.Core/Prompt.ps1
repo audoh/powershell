@@ -19,6 +19,8 @@ function Prompt {
     $git = "($($branch))";
   }
 
+  [Console]::ResetColor()
+
   # Write at the end to avoid weird jumping about of the cursor
   Write-Host "$($date) $($path)" -NoNewline;
   if ($git) {
