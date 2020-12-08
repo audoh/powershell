@@ -4,4 +4,4 @@
 . $PSScriptRoot\Get-HasUnpushedCommits.ps1
 . $PSScriptRoot\Clear-UntrackedBranches.ps1
 
-Export-ModuleMember -Function Get-IsGitRepository, Get-GitBranch, Get-HasUncommittedChanges, Get-HasUnpushedCommits
+Export-ModuleMember -Function Get-IsGitRepository, Get-GitBranch, Get-HasUncommittedChanges, Get-HasUnpushedCommits, Clear-UntrackedBranches
