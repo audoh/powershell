@@ -1,5 +1,5 @@
-Import-Module -Name $PSScriptRoot\..\PowerShellUtilities.Git
 . $PSScriptRoot\Get-ShortPath.ps1
+Import-Module -Name $PSScriptRoot\..\PowerShellUtilities.Git
 . $PSScriptRoot\Get-CommandLocation.ps1
 . $PSScriptRoot\Hide-DotFiles.ps1
 . $PSScriptRoot\Prompt.ps1
