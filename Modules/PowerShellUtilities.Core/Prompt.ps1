@@ -34,7 +34,8 @@ function Prompt {
   if ($git) {
     Write-Host " $($git)" -NoNewline -ForegroundColor $color;
   }
-  Write-Host " >" -NoNewline;
 
-  return " ";
+  Write-Host " " -NoNewline
+
+  return "> ";
 }
