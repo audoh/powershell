@@ -1,7 +1,7 @@
 enum Format {
   Normal
   Verbose
-  Body
+  Text
   Fixture
 }
 
@@ -17,7 +17,7 @@ function Invoke-RequestFile {
     $Replace = @(),
     [Parameter()]
     [Format]
-    $Format = [Format]::Normal,
+    $Format = [Format]::Text,
     [Parameter()]
     [switch]
     $PrintCurl = $False,
@@ -118,11 +118,7 @@ function Invoke-RequestFile {
     Invoke-WebRequest -Method $method -Uri $url -Headers $headers -Body $body -SkipHttpErrorCheck
   )
   switch ($Format) {
-    Normal {
-      Write-Host $response.StatusCode $response.StatusDescription
-      $response.Content
-    }
-    Body { $response.Content }
+    Text { $response.Content }
     Verbose { $response }
     Fixture {
       @{
