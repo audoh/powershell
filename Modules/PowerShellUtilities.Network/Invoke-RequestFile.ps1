@@ -27,58 +27,61 @@ function Invoke-RequestFile {
 
   if ([string]::IsNullOrWhiteSpace($request.Method)) {
     $method = "GET"
-  }
-  else {
+  } else {
     $method = $request.Method
   }
 
   if ($request.Headers -is [System.Management.Automation.PSCustomObject]) {
     $headers = $request.Headers
-  }
-  else {
+  } else {
     $headers = @{}
   }
 
   if ($request.Body -is [System.Management.Automation.PSCustomObject]) {
     if ($headers."Content-Type" -eq "application/json") {
       $body = $request.Body | ConvertTo-Json -Compress
-    }
-    else {
+    } else {
       $body = $request.Body
     }
-  }
-  elseif ($request.Body -ne $null) {
+  } elseif ($request.Body -ne $null) {
     $body = $request.Body.ToString()
-  }
-  else {
+  } else {
     $body = $null
   }
 
-  $replacements = @{}
+  $inputReplacements = @{}
   $Replace | ForEach-Object {
     $_.GetEnumerator() | ForEach-Object {
-      $replacements[$_.Key] = $_.Value
+      $inputReplacements[$_.Key] = $_.Value
     }
   }
 
+  $replacements = @{}
   $request.Replacements.PSObject.Properties | ForEach-Object {
-    $name = $_.Name
     $settings = $_.Value
-    if ($settings.Default) {
-      if (!$replacements.ContainsKey($name)) {
-        $replacements[$name] = $settings.Default
-      }
-    }
-    if ($settings.Required) {
-      if (!$replacements.ContainsKey($name)) {
-        Write-Error "Required replacement $($name)"
+    $name = if ($_.Value.Name -ne $null) { $_.Value.Name } else { $_.Name }
+    $target = $_.Name
+    $replacement = $inputReplacements[$name]
+
+    if ($replacement -eq $null) {
+      if ([System.Environment]::GetEnvironmentVariable($name) -ne $null) {
+        $replacement = [System.Environment]::GetEnvironmentVariable($name)
+      } elseif ($settings.Default) {
+        $replacement = $settings.Default
+      } elseif ($settings.Required) {
+        Write-Error "Required replacement '$($name)'"
         exit 1
       }
     }
+
+    $replacements[$target] = $replacement
   }
+
 
   $headers = $headers | ConvertTo-Json -Compress
   $replacements.GetEnumerator() | ForEach-Object {
+    Write-Host $_.Key -> $_.Value
+
     if ($body -is [string]) {
       $body = $body -ireplace [regex]::Escape($_.Key), $_.Value
     }
