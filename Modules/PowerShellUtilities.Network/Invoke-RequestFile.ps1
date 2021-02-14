@@ -14,11 +14,14 @@ function Invoke-RequestFile {
     [hashtable[]]
     $Replace = @(),
     [Parameter()]
+    [Format]
+    $Format = [Format]::Normal,
+    [Parameter()]
     [switch]
     $PrintCurl = $False,
     [Parameter()]
-    [Format]
-    $Format = [Format]::Normal
+    [switch]
+    $DryRun = $False
   )
 
   $request = Get-Content -Path $Path | ConvertFrom-Json
@@ -80,8 +83,6 @@ function Invoke-RequestFile {
 
   $headers = $headers | ConvertTo-Json -Compress
   $replacements.GetEnumerator() | ForEach-Object {
-    Write-Host $_.Key -> $_.Value
-
     if ($body -is [string]) {
       $body = $body -ireplace [regex]::Escape($_.Key), $_.Value
     }
@@ -105,6 +106,11 @@ function Invoke-RequestFile {
     }
 
     Write-Host "curl -L -X $method $url -d '$body'$headerString"
+  }
+
+  if ($DryRun) {
+    Write-Host Invoke-WebRequest -Method $method -Uri $url -Headers $headers -Body $body -SkipHttpErrorCheck
+    return
   }
 
   $response = [Microsoft.PowerShell.Commands.BasicHtmlWebResponseObject](
