@@ -3,6 +3,7 @@ enum Format {
   Verbose
   Body
 }
+
 function Invoke-RequestFile {
   [CmdletBinding()]
   param (
@@ -109,7 +110,7 @@ function Invoke-RequestFile {
   }
 
   if ($DryRun) {
-    Write-Host Invoke-WebRequest -Method $method -Uri $url -Headers $headers -Body $body -SkipHttpErrorCheck
+    Write-Host Invoke-WebRequest -Method $method -Uri $url -Headers $(ConvertTo-PowerShell $headers) -Body $body -SkipHttpErrorCheck
     return
   }
 
