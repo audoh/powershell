@@ -2,6 +2,7 @@ enum Format {
   Normal
   Verbose
   Body
+  Fixture
 }
 
 function Invoke-RequestFile {
@@ -81,7 +82,6 @@ function Invoke-RequestFile {
     $replacements[$target] = $replacement
   }
 
-
   $headers = $headers | ConvertTo-Json -Compress
   $replacements.GetEnumerator() | ForEach-Object {
     if ($body -is [string]) {
@@ -122,8 +122,20 @@ function Invoke-RequestFile {
       Write-Host $response.StatusCode $response.StatusDescription
       $response.Content
     }
-    Body { $response.RawContent }
+    Body { $response.Content }
     Verbose { $response }
+    Fixture {
+      @{
+        "method" = $method
+        "request_headers" = $headers
+        "request_body" = $body
+        "url" = $url
+        "headers" = $response.Headers
+        "text" = $response.Content
+        "status_code" = [int]($response.StatusCode)
+
+      } | ConvertTo-Json
+    }
   }
 }
 
