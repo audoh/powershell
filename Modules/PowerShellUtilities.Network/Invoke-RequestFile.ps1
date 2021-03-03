@@ -32,25 +32,30 @@ function Invoke-RequestFile {
 
   if ([string]::IsNullOrWhiteSpace($request.Method)) {
     $method = "GET"
-  } else {
+  }
+  else {
     $method = $request.Method
   }
 
   if ($request.Headers -is [System.Management.Automation.PSCustomObject]) {
     $headers = $request.Headers
-  } else {
+  }
+  else {
     $headers = @{}
   }
 
   if ($request.Body -is [System.Management.Automation.PSCustomObject]) {
     if ($headers."Content-Type" -eq "application/json") {
       $body = $request.Body | ConvertTo-Json -Compress
-    } else {
+    }
+    else {
       $body = $request.Body
     }
-  } elseif ($request.Body -ne $null) {
+  }
+  elseif ($request.Body -ne $null) {
     $body = $request.Body.ToString()
-  } else {
+  }
+  else {
     $body = $null
   }
 
@@ -71,11 +76,12 @@ function Invoke-RequestFile {
     if ($replacement -eq $null) {
       if ([System.Environment]::GetEnvironmentVariable($name) -ne $null) {
         $replacement = [System.Environment]::GetEnvironmentVariable($name)
-      } elseif ($settings.Default) {
+      }
+      elseif ($settings.Default) {
         $replacement = $settings.Default
-      } elseif ($settings.Required) {
-        Write-Error "Required replacement '$($name)'"
-        exit 1
+      }
+      elseif ($settings.Required -ne $False) {
+        $replacement = Read-Host -Prompt "Enter a value for $($name)"
       }
     }
 
